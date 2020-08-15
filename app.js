@@ -22,8 +22,106 @@ const articleSchema = {
     content: String
 };
 
-//Apply the schema to the database.
-const Article = mongoose.Schema("Article", articleSchema);
+//Apply the schema to the database. Set up the model.
+const Article = mongoose.model("Article", articleSchema);
+
+
+app.route('/articles').get((req, res) => {
+    Article.find({}, (err, foundArticles) => {
+        if(!err)
+        {
+            console.log(foundArticles);
+        } else {
+            console.log(err);
+        }
+    });
+}).post((req, res) =>{
+    //Data from front end.
+    const content = req.body.content;
+    const title = req.body.title;
+
+    const newArticle = new Article({
+        content: content,
+        title: title
+    });
+
+    newArticle.save((err) => {
+        if(!err) {
+            console.log("Successully saved to database");
+        } else {
+            console.log(err);
+        }
+    });
+}).delete((req, res) => {
+    const content = req.body.content;
+    const title = req.body.title;
+
+    Article.deleteMany({}, (err) =>{
+        if(!err) {
+            console.log("Successully deleted from database");
+        } else {
+            console.log(err);
+        }
+    })
+});
+
+app.route('/articles/:articleTitle').get((req, res) => {
+    const title = req.params.articleTitle;
+    Article.findOne({title: title}, (err, article) => {
+        if(!err) {
+            if(articleTitle) {
+                res.send(article);
+            } else {
+                res.send("No article found.");
+            }
+        } else {
+            console.log(err);
+        }
+    });
+});
+
+// app.get('/articles', (req, res) => {
+//     Article.find({}, (err, results) => {
+//         if(!err)
+//         {
+//             console.log(results);
+//         } else {
+//             console.log(err);
+//         }
+//     });
+// });
+
+// app.post('/articles', (req, res) =>{
+//     //Data from front end.
+//     const content = req.body.content;
+//     const title = req.body.title;
+
+//     const newArticle = new Article({
+//         content: content,
+//         title: title
+//     });
+
+//     newArticle.save((err) => {
+//         if(!err) {
+//             console.log("Successully saved to database");
+//         } else {
+//             console.log(err);
+//         }
+//     });
+// });
+
+// app.delete('/articles', (req, res) => {
+//     const content = req.body.content;
+//     const title = req.body.title;
+
+//     Article.deleteMany({}, (err) =>{
+//         if(!err) {
+//             console.log("Successully deleted from database");
+//         } else {
+//             console.log(err);
+//         }
+//     })
+// });
 
 //Start up the server.
 app.listen(3000, () => {
