@@ -78,6 +78,25 @@ app.route('/articles/:articleTitle').get((req, res) => {
             console.log(err);
         }
     });
+})
+.put((req, res) => {
+    const articleTitle = req.params.articleTitle;
+    const title = req.body.title;
+    const content = req.body.content;
+    Article.update({title: articleTitle}, 
+        {title: title, content: content},
+        {overwrite: true},
+        (err, results) => {
+            if(!err) {
+                if(articleTitle) {
+                    res.send("Successfylly updated article");
+                } else {
+                    res.send("No article found.");
+                }
+            } else {
+                console.log(err);
+            }
+        });
 });
 
 // app.get('/articles', (req, res) => {
